@@ -1,7 +1,7 @@
 const express = require("express");
 const app = express();
 const port = 4000;
-app.use(express.json()) 
+app.use(express.json());
 
 // Function from lesson to add id to new records in collection with an id. Called in post handler
 function getNextIdFromCollection(collection) {
@@ -48,38 +48,44 @@ app.put("/:id", (req, res) => {
     // Grab ID from params
     const personID = parseInt(req.params.id, 10);
     // find index of person we want to replace
-    const personIndex = data.indexOf(person => person.id === personID);
+    console.log(personID);
+    const personIndex = data.findIndex(person => person.id === personID);
     // New data comes from the request
     const newPerson = {
         ...req.body,
         id: personID
     }
-    console.log(req.body);
     // replace the index of the previous person with this person
     data[personIndex] = newPerson;
     res.send(newPerson);
 })
 
 app.patch("/:id", (req, res) => {
+    // Grab ID from params
     const personID = parseInt(req.params.id, 10);
-    const personIndex = data.indexOf(person => person.id === personID);
+    const personIndex = data.findIndex(person => person.id === personID);
     const updates = req.body;
-    const personUpdates = {...data[personIndex], ...req.body}
+    // Make a new data piece, first with all of our old data spread out, and then replace the parts that have been updated with the updated data
+    const personUpdates = {...data[personIndex], ...updates};
     data[personIndex] = personUpdates;
+    // Send the person updates
     res.send(personUpdates);
 })
 
 app.delete("/:id", (req, res) => {
+    // Get ID, find index
     const personID = parseInt(req.params.id, 10);
     const personIndex = data.findIndex(person => person.id === personID);
+    // Delete the index off the data
     data.splice(personIndex, 1);
+    // Message send
     res.send({message: "Job Deleted Successfully"});
 })
 
 const data = [
     {
         name: "Mandy",
-        age: 450,
+        age: 45,
         id: 1
     },
     {
@@ -89,7 +95,7 @@ const data = [
     },
     {
         name: "Melony",
-        age: 38,
+        age: 39,
         id: 3
     }
 ];
